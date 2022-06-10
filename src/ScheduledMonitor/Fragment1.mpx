@@ -1,0 +1,312 @@
+﻿<ManagementPackFragment SchemaVersion="2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TypeDefinitions>
+    <ModuleTypes>
+      <DataSourceModuleType ID="Contoso.ScheduledMonitors.CPUUtilization.ModuleType" Accessibility="Internal">
+        <Configuration>
+          <xsd:element name="IntervalSeconds" type="xsd:int" />
+          <xsd:element name="TargetComputerName" type="xsd:string" />
+          <xsd:element name="NumSamples" type="xsd:int" />
+          <xsd:element name="CounterName" type="xsd:string" />
+          <xsd:element name="ObjectName" type="xsd:string" />
+          <xsd:element name="InstanceName" type="xsd:string" />
+          <xsd:element name="AllInstances" type="xsd:boolean" />
+        </Configuration>
+        <OverrideableParameters>
+          <OverrideableParameter ID="IntervalSeconds" Selector="$Config/IntervalSeconds$" ParameterType="int" />
+          <OverrideableParameter ID="NumSamples" Selector="$Config/NumSamples$" ParameterType="int" />
+        </OverrideableParameters>
+        <ModuleImplementation>
+          <Composite>
+            <MemberModules>
+              <DataSource TypeID="Perf!System.Performance.DataProvider" ID="DS1">
+                <ComputerName>$Config/TargetComputerName$</ComputerName>
+                <CounterName>$Config/CounterName$</CounterName>
+                <ObjectName>$Config/ObjectName$</ObjectName>
+                <InstanceName>$Config/InstanceName$</InstanceName>
+                <AllInstances>$Config/AllInstances$</AllInstances>
+                <Frequency>$Config/IntervalSeconds$</Frequency>
+              </DataSource>
+              <ConditionDetection TypeID="Perf!System.Performance.AveragerCondition" ID="CDAverageThreshold">
+                <NumSamples>$Config/NumSamples$</NumSamples>
+              </ConditionDetection>
+            </MemberModules>
+            <Composition>
+              <Node ID="CDAverageThreshold">
+                <Node ID="DS1" />
+              </Node>
+            </Composition>
+          </Composite>
+        </ModuleImplementation>
+        <OutputType>Perf!System.Performance.Data</OutputType>
+      </DataSourceModuleType>
+    </ModuleTypes>
+    <MonitorTypes>
+      <UnitMonitorType ID="Contoso.ScheduledMonitors.CPUUtilization.Monitortype" Accessibility="Internal">
+        <MonitorTypeStates>
+          <MonitorTypeState ID="CPUUtilizationNormal" />
+          <MonitorTypeState ID="CPUUtilizationHigh" />
+        </MonitorTypeStates>
+        <Configuration>
+          <xsd:element name="IntervalSeconds" type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="TimeoutSeconds" type="xsd:integer" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="TargetComputerName" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="CPUPercentageThreshold" type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="CPUQueueLengthThreshold" type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="NumSamples" type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="CounterName" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="ObjectName" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="InstanceName" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="AllInstances" type="xsd:boolean" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="Start" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="End" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element name="DaysOfWeekMask" type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+        </Configuration>
+        <OverrideableParameters>
+          <OverrideableParameter ID="IntervalSeconds" Selector="$Config/IntervalSeconds$" ParameterType="int" />
+          <OverrideableParameter ID="TimeoutSeconds" ParameterType="int" Selector="$Config/TimeoutSeconds$" />
+          <OverrideableParameter ID="CPUPercentageThreshold" Selector="$Config/CPUPercentageThreshold$" ParameterType="int" />
+          <OverrideableParameter ID="CPUQueueLengthThreshold" Selector="$Config/CPUQueueLengthThreshold$" ParameterType="int" />
+          <OverrideableParameter ID="NumSamples" Selector="$Config/NumSamples$" ParameterType="int" />
+          <OverrideableParameter ID="Start" Selector="$Config/Start$" ParameterType="string" />
+          <OverrideableParameter ID="End" Selector="$Config/End$" ParameterType="string" />
+          <OverrideableParameter ID="DaysOfWeekMask" Selector="$Config/DaysOfWeekMask$" ParameterType="int" />
+        </OverrideableParameters>
+        <MonitorImplementation>
+          <MemberModules>
+            <DataSource TypeID="Contoso.ScheduledMonitors.CPUUtilization.ModuleType" ID="DS1">
+              <IntervalSeconds>$Config/IntervalSeconds$</IntervalSeconds>
+              <TargetComputerName>$Config/TargetComputerName$</TargetComputerName>
+              <NumSamples>$Config/NumSamples$</NumSamples>
+              <CounterName>$Config/CounterName$</CounterName>
+              <ObjectName>$Config/ObjectName$</ObjectName>
+              <InstanceName>$Config/InstanceName$</InstanceName>
+              <AllInstances>$Config/AllInstances$</AllInstances>
+            </DataSource>
+            <ProbeAction ID="ProbeActionDS" TypeID="MWS2M!Microsoft.Windows.Server.10.0.PowerShellPropertyBagProbe">
+              <ScriptName>Microsoft.Windows.Server.CPUUtilization.Monitortype.ps1</ScriptName>
+              <PSparam>param ($CPU_PERCENTAGE_THRESHOLD, $CPU_QUEUELEN_THRESHOLD, $TargetComputer, $CPU_USAGE)</PSparam>
+              <ScriptBody>
+                #Copyright (c) Microsoft Corporation. All rights reserved.
+
+                # Parameters that should be passed to this script
+                # 0 CPU_PERCENTAGE_THRESHOLD
+                # 1 CPU_QUEUELEN_THRESHOLD
+                # 2 Computer (FQDN)
+                # 3 CPU_USAGE
+
+                Function Main()
+                {
+                if ($CPU_USAGE -lt 0 -or ($CPU_USAGE - $CPU_PERCENTAGE_THRESHOLD -lt 0))
+                {
+                ReturnResults "GOOD" 0 $CPU_USAGE
+                exit
+                }
+
+                #
+                # Sample the queue length. If we exceed threshold, then we will wait and sample agian
+                # to avoid sampling a cpu spike, both have exceeded, then we have a runaway cpu.
+                #
+
+                $lNumProcessors = GetNumProcessors $TargetComputer
+
+                $nQueueLength = GetCpuQueueLength $TargetComputer
+                if ($nQueueLength -gt [long]$CPU_QUEUELEN_THRESHOLD * $lNumProcessors)
+                {
+                sleep -m 500
+                $nQueueLength = GetCpuQueueLength $TargetComputer
+                if ($nQueueLength -gt [long]$CPU_QUEUELEN_THRESHOLD * $lNumProcessors)
+                {
+                ReturnResults "BAD" $nQueueLength $CPU_USAGE
+                exit
+                }
+                }
+
+                ReturnResults "GOOD" $nQueueLength $CPU_USAGE
+                Unload-Module -ModuleName "CimCmdLets"
+                }
+
+                Function ReturnResults
+                {
+                param ($State, $QueueLength, $PctUsage)
+
+                $oBag = $momAPI.CreatePropertyBag()
+                $oBag.AddValue("State", $State)
+                $oBag.AddValue("QueueLength", $QueueLength)
+                $oBag.AddValue("PctUsage", $PctUsage)
+                $oBag
+                }
+
+                # Windows Server 2003, Windows XP, and Windows 2000: Because the NumberOfLogicalProcessors property
+                # is not available, NumberOfProcessors indicates the number of logical processors available in the
+                # system. In the case of a computer system that has two physical processors each containing two
+                # logical processors, the value of NumberOfProcessors is 4.
+                # For more information see "http://msdn2.microsoft.com/en-us/library/aa394102(VS.85).aspx"
+                Function GetNumProcessors($TargetComputer)
+                {
+                $WMISet = WMIGetInstanceEx $TargetComputer "root\cimv2" "Win32_ComputerSystem"
+                foreach ($owObj in $WMISet)
+                {
+                $error.Clear()
+                return $owObj.NumberOfLogicalProcessors
+                if ($error.Count -ne 0)
+                {
+                return $owObj.NumberOfProcessors
+                }
+                }
+                }
+
+                Function GetCpuQueueLength($TargetComputer)
+                {
+                $WMISet = WMIGetInstanceEx $TargetComputer "root\cimv2" "Win32_PerfRawData_PerfOS_System"
+                foreach ($owObj in $WMISet)
+                {
+                return $owObj.ProcessorQueueLength
+                }
+                }
+
+                Main
+              </ScriptBody>
+              <Parameters>
+                <Parameter>
+                  <Name>CPU_PERCENTAGE_THRESHOLD</Name>
+                  <Value>$Config/CPUPercentageThreshold$</Value>
+                </Parameter>
+                <Parameter>
+                  <Name>CPU_QUEUELEN_THRESHOLD</Name>
+                  <Value>$Config/CPUQueueLengthThreshold$</Value>
+                </Parameter>
+                <Parameter>
+                  <Name>TargetComputer</Name>
+                  <Value>$Config/TargetComputerName$</Value>
+                </Parameter>
+                <Parameter>
+                  <Name>CPU_USAGE</Name>
+                  <Value>$Data/Value$</Value>
+                </Parameter>
+              </Parameters>
+              <TimeoutSeconds>$Config/TimeoutSeconds$</TimeoutSeconds>
+            </ProbeAction>
+            <ConditionDetection ID="FilterOK" TypeID="System!System.ExpressionFilter">
+              <Expression>
+                <RegExExpression>
+                  <ValueExpression>
+                    <XPathQuery>Property[@Name='State']</XPathQuery>
+                  </ValueExpression>
+                  <Operator>ContainsSubstring</Operator>
+                  <Pattern>GOOD</Pattern>
+                </RegExExpression>
+              </Expression>
+            </ConditionDetection>
+            <ConditionDetection ID="FilterNotOK" TypeID="System!System.ExpressionFilter">
+              <Expression>
+                <RegExExpression>
+                  <ValueExpression>
+                    <XPathQuery>Property[@Name='State']</XPathQuery>
+                  </ValueExpression>
+                  <Operator>ContainsSubstring</Operator>
+                  <Pattern>BAD</Pattern>
+                </RegExExpression>
+              </Expression>
+            </ConditionDetection>
+            <ConditionDetection ID="Schedule" TypeID="System!System.SchedulerFilter">
+              <SchedulerFilter>
+                <ProcessDataMode>OnSchedule</ProcessDataMode>
+                <Schedule>
+                  <WeeklySchedule>
+                    <Windows>
+                      <Daily>
+                        <Start>$Config/Start$</Start>
+                        <End>$Config/End$</End>
+                        <DaysOfWeekMask>$Config/DaysOfWeekMask$</DaysOfWeekMask>
+                      </Daily>
+                    </Windows>
+                  </WeeklySchedule>
+                  <ExcludeDates />
+                </Schedule>
+                <UseCurrentTime>true</UseCurrentTime>
+              </SchedulerFilter>
+            </ConditionDetection>
+          </MemberModules>
+          <RegularDetections>
+            <RegularDetection MonitorTypeStateID="CPUUtilizationNormal">
+              <Node ID="FilterOK">
+                <Node ID="ProbeActionDS">
+                  <Node ID="DS1" />
+                </Node>
+              </Node>
+            </RegularDetection>
+            <RegularDetection MonitorTypeStateID="CPUUtilizationHigh">
+              <Node ID="FilterNotOK">
+                <Node ID = "Schedule">
+                  <Node ID="ProbeActionDS">
+                    <Node ID="DS1" />
+                  </Node>
+                </Node>
+              </Node>
+            </RegularDetection>
+          </RegularDetections>
+        </MonitorImplementation>
+      </UnitMonitorType>
+    </MonitorTypes>
+  </TypeDefinitions>
+  <Monitoring>
+    <Monitors>
+
+      <UnitMonitor ID="Contoso.ScheduledMonitors.TotalCPUUtilization.Monitor" Accessibility="Public" Enabled="true" Target="MWS2D!Microsoft.Windows.Server.10.0.OperatingSystem" ParentMonitorID="Health!System.Health.PerformanceState" Remotable="true" Priority="Normal" TypeID="Contoso.ScheduledMonitors.CPUUtilization.Monitortype" ConfirmDelivery="false">
+        <Category>PerformanceHealth</Category>
+        <AlertSettings AlertMessage="Contoso.ScheduledMonitors.TotalCPUUtilization.AlertMessage">
+          <AlertOnState>Error</AlertOnState>
+          <AutoResolve>true</AutoResolve>
+          <AlertPriority>Normal</AlertPriority>
+          <AlertSeverity>Error</AlertSeverity>
+          <AlertParameters>
+            <AlertParameter1>$Data/Context/Property[@Name='PctUsage']$</AlertParameter1>
+            <AlertParameter2>$Data/Context/Property[@Name='QueueLength']$</AlertParameter2>
+          </AlertParameters>
+        </AlertSettings>
+        <OperationalStates>
+          <OperationalState ID="OverThreshold" MonitorTypeStateID="CPUUtilizationHigh" HealthState="Error" />
+          <OperationalState ID="UnderThreshold" MonitorTypeStateID="CPUUtilizationNormal" HealthState="Success" />
+        </OperationalStates>
+        <Configuration>
+          <IntervalSeconds>900</IntervalSeconds>
+          <TimeoutSeconds>300</TimeoutSeconds>
+          <TargetComputerName>$Target/Host/Property[Type="Windows!Microsoft.Windows.Computer"]/NetworkName$</TargetComputerName>
+          <CPUPercentageThreshold>95</CPUPercentageThreshold>
+          <CPUQueueLengthThreshold>15</CPUQueueLengthThreshold>
+          <NumSamples>3</NumSamples>
+          <CounterName>% Processor Time</CounterName>
+          <ObjectName>Processor Information</ObjectName>
+          <InstanceName>_Total</InstanceName>
+          <AllInstances>false</AllInstances>
+          <Start>08:00</Start>
+          <End>18:00</End>
+          <DaysOfWeekMask>62</DaysOfWeekMask>
+          </Configuration>
+      </UnitMonitor>
+    </Monitors>
+  </Monitoring>
+  <Presentation>
+    <StringResources>
+      <StringResource ID="Contoso.ScheduledMonitors.TotalCPUUtilization.AlertMessage" />
+    </StringResources>
+  </Presentation>
+  <LanguagePacks>
+    <LanguagePack ID="ENU" IsDefault="true">
+      <DisplayStrings>
+        <DisplayString ElementID="Contoso.ScheduledMonitors.CPUUtilization.Monitortype">
+          <Name>Contoso CPUUtilization Monitortype</Name>
+          <Description>CPUUtilization Monitortype</Description>
+        </DisplayString>
+        <DisplayString ElementID="Contoso.ScheduledMonitors.TotalCPUUtilization.Monitor">
+          <Name>Contoso Total CPU Utilization</Name>
+          <Description>Contoso Total CPU Utilization Monitor</Description>
+        </DisplayString>
+        <DisplayString ElementID="Contoso.ScheduledMonitors.TotalCPUUtilization.AlertMessage">
+          <Name>Total CPU Utilization Percentage is too high</Name>
+          <Description>The threshold for the Processor Information\% Processor Time\_Total performance counter has been exceeded. The values that exceeded the threshold are: {0}% CPU and a processor queue length of {1}.</Description>
+        </DisplayString>
+      </DisplayStrings>
+    </LanguagePack>
+  </LanguagePacks>
+</ManagementPackFragment>

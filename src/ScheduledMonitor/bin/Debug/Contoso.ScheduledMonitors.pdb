@@ -1,0 +1,8 @@
+Fragment1.mpx*Contoso.ScheduledMonitors.CPUUtilization.ModuleType*4*8*DataSourceModuleType
+Fragment1.mpx*Contoso.ScheduledMonitors.CPUUtilization.Monitortype*44*8*UnitMonitorType
+Fragment1.mpx*Contoso.ScheduledMonitors.TotalCPUUtilization.Monitor*255*8*UnitMonitor
+Fragment1.mpx*Contoso.ScheduledMonitors.TotalCPUUtilization.AlertMessage*291*8*StringResource
+Fragment1.mpx*Contoso.ScheduledMonitors.CPUUtilization.Monitortype*297*10*DisplayString
+Fragment1.mpx*Contoso.ScheduledMonitors.TotalCPUUtilization.Monitor*301*10*DisplayString
+Fragment1.mpx*Contoso.ScheduledMonitors.TotalCPUUtilization.AlertMessage*305*10*DisplayString
+ManagementPack.mpx*Contoso.ScheduledMonitors*5*10*DisplayString
